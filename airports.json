@@ -1,0 +1,57 @@
+    {
+        "TLL": 
+        {
+            "coord": [59.414018, 24.833489], 
+            "linked_cities": ["RIX", "SVO", "OSL", "FRA", "BGY"]
+        },
+        "RIX": 
+        {
+            "coord": [56.9226554, 23.9749147],
+            "linked_cities": ["SVO", "SPU", "DBV", "LIS"]
+        },
+        "BGY":
+        {
+            "coord": [45.668656, 9.703288],
+            "linked_cities": ["TLL", "RIX", "DSS", "AGA"]
+        },
+        "SVO":
+        {
+            "coord": [],
+            "linked_cities": ["TLL", "RIX"]
+        },
+        "OSL":
+        {
+            "coord": [],
+            "linked_cities": ["TLL"]
+        },
+        "FRA":
+        {
+            "coord": [],
+            "linked_cities": ["TLL"]
+        },
+        "SPU":
+        {
+            "coord": [],
+            "linked_cities": ["RIX"]
+        },
+        "DBV":
+        {
+            "coord": [],
+            "linked_cities": ["RIX"]
+        },
+        "LIS":
+        {
+            "coord": [],
+            "linked_cities": ["RIX"]
+        },
+        "DSS":
+        {
+            "coord": [],
+            "linked_cities": ["BGY"]
+        },
+        "AGA":
+        {
+            "coord": [],
+            "linked_cities": ["BGY"]
+        }
+    }
