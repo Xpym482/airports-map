@@ -8,6 +8,9 @@
         <script src="index.js"></script>
     </head>
     <body onload="createMap()">
+        <input type="text" id="FromAirport" class="FromAirport" placeholder="From">
+        <input type="text" id="ToAirport" class="ToAirport" placeholder="To">
+        <input type="submit" value="Make route" onclick="buildRoute()">
         <div id="mapid"></div>
     </body>
 </html>

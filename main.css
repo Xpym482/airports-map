@@ -1,4 +1,8 @@
 #mapid { 
-    height: 70vw;
+    height: 60vw;
     width: 100%;
+}
+
+.ToAirport, .FromAirport{
+    margin: 5px;
 }
