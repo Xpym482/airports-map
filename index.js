@@ -1,18 +1,18 @@
 const airports = {
-    "TLL": 
+    "TLL":
     {
         "coord": [59.414018, 24.833489], 
         "linked_cities": ["RIX", "SVO", "OSL", "FRA", "BGY"]
     },
-    "RIX": 
+    "RIX":
     {
         "coord": [56.9226554, 23.9749147],
-        "linked_cities": ["SVO", "SPU", "DBV", "LIS"]
+        "linked_cities": ["TLL", "SVO", "SPU", "DBV", "LIS"]
     },
     "BGY":
     {
         "coord": [45.668656, 9.703288],
-        "linked_cities": ["TLL", "RIX", "DSS", "AGA"]
+        "linked_cities": ["TLL", "RIX", "DSS"]
     },
     "SVO":
     {
@@ -42,7 +42,7 @@ const airports = {
     "LIS":
     {
         "coord": [38.781300, -9.135920],
-        "linked_cities": ["RIX"]
+        "linked_cities": ["RIX", "AGA"]
     },
     "DSS":
     {
@@ -52,13 +52,13 @@ const airports = {
     "AGA":
     {
         "coord": [30.325001, -9.413070],
-        "linked_cities": ["BGY"]
+        "linked_cities": ["LIS"]
     }
 };
 
 function createMap(){
     // add BFS function with two agruments: starting airport and ending airport
-    var mymap = L.map('mapid').setView([59.414018, 24.833489], 2);
+    var mymap = L.map('mapid').setView([59.414018, 24.833489], 5);
 
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -83,31 +83,60 @@ function drawAirportLines(map){
     for([key, value] of Object.entries(airports)){
         var markertln = L.marker(value.coord).addTo(map);
         markertln.bindPopup(key);
-        // console.log(key, value.coord);
     }
 }
 
-function buildRoute(){
+function findPlaces(){
     let visited = [];
     const fromAirport = document.getElementById("FromAirport").value;
     const toAirport = document.getElementById("ToAirport").value;
     let queue = [];
     queue.push(fromAirport);
-    visited[fromAirport] = true;
-    
-    while(queue != null){
-        startingpoint = queue.pop();
-        if(toAirport === startingpoint){
+    let foundPath = false;
+
+    // visited[fromAirport] = true;
+    /* visited[TLL] = true
+     * visited[BGY] = true
+     * visited[AGA] = true
+     */
+
+    while (foundPath != true) {
+        let startingpoint = queue.pop();
+        if (toAirport === startingpoint) {
             break;
         }
-        for([key, value] of Object.entries(airports)){
-            if(startingpoint === fromAirport){
-                for(city of value.linked_cities){
-                    queue.push(city);
-                    visited[city] = false; 
-                }
+        visited.push(startingpoint);
+        for (city of airports[startingpoint].linked_cities) {
+            if (visited.includes(city) === false) {
+                queue.push(city);
+            }
+            else if (visited.includes(city) === true && airports[startingpoint].linked_cities.length === 1) {
+                visited.splice(visited.indexOf(startingpoint), 1);
+            }
+            if (toAirport === city) {
+                foundPath = true;
+                visited.push(city);
+                break;
             }
         }
     }
+
+    let places = [];
+    let path = buildRoute(places, fromAirport, toAirport);
+
+    console.log(visited);
+    if(queue == false) console.log("Cant build route!");
+
     console.log(fromAirport, toAirport);
+}
+
+function buildRoute(places, start, end){
+    let startingAirport = airports.start.linked_cities.pop();
+    for (city of airports.startingAirport.linked_cities) {
+        if (end === city) {
+            return true;
+        } else {
+            buildRoute(startingAirport, end);
+        }
+    }
 }
