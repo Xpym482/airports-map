@@ -1,3 +1,11 @@
+/* 
+    * TLL = Tallinn, RIX = Riga
+    * SVO = Moscow, OSL = Oslo
+    * FRA = Frankfurt, BGY = Bergamo
+    * CDG = Paris, DBV = Dubrovnik
+    * SPU = Split, LIS = Lisbon
+    * DSS = Dakar, AGA = Agadir
+*/
 const airports = {
     "TLL":
     {
@@ -56,87 +64,114 @@ const airports = {
     }
 };
 
+let mymap;
+
 function createMap(){
-    // add BFS function with two agruments: starting airport and ending airport
-    var mymap = L.map('mapid').setView([59.414018, 24.833489], 5);
+    mymap = L.map('mapid').setView([59.414018, 24.833489], 5);
 
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mymap);
-
-
-    /* TLL = Tallinn, RIX = Riga
-     * SVO = Moscow, OSL = Oslo
-     * FRA = Frankfurt, BGY = Bergamo
-     * CDG = Paris, DBV = Dubrovnik
-     * SPU = Split, LIS = Lisbon
-     * DSS = Dakar, AGA = Agadir
-    */
     
-    // var polyline = L.polyline([tlncoord, rigacoord], {color: 'red', weight: 3}).addTo(mymap);
-    // zoom the map to the polyline
-    // mymap.fitBounds(polyline.getBounds());
-    drawAirportLines(mymap);
-}
-
-function drawAirportLines(map){
     for([key, value] of Object.entries(airports)){
-        var markertln = L.marker(value.coord).addTo(map);
+        var markertln = L.marker(value.coord).addTo(mymap);
         markertln.bindPopup(key);
     }
+
+    airportsListCreate();
 }
+
+function airportsListCreate(){
+    let divPlace = document.getElementById("airportsList");
+    let airportsList = document.createElement("ul");
+    divPlace.appendChild(airportsList);
+    for (city of Object.keys(airports)) {
+        let node = document.createElement("li");
+        let textNode = document.createTextNode(city);
+        node.appendChild(textNode);
+        airportsList.appendChild(node);
+    }
+}
+
 
 function findPlaces(){
+    let route = [];
+    let queue = [];
     let visited = [];
+    let result = false;
+    let foundPath = false;
     const fromAirport = document.getElementById("FromAirport").value;
     const toAirport = document.getElementById("ToAirport").value;
-    let queue = [];
+
+    if (fromAirport == "" || toAirport == "") {
+        alert("Need to start point and end point!");
+        return null;
+    }
+
+    if (!Object.keys(airports).includes(fromAirport) || !Object.keys(airports).includes(toAirport)) {
+        alert("Wrong airport name!");
+        return null;
+    }
+
     queue.push(fromAirport);
-    let foundPath = false;
 
-    // visited[fromAirport] = true;
-    /* visited[TLL] = true
-     * visited[BGY] = true
-     * visited[AGA] = true
-     */
-
-    while (foundPath != true) {
-        let startingpoint = queue.pop();
-        if (toAirport === startingpoint) {
+    while (queue != false) {
+        // Clear airports from route if we dont need them except starting airport
+        if (route != false) {
+            route.splice(route.indexOf(fromAirport) + 1, route.length - 1);
+            foundPath = false;
+        } 
+        // Checked all airports but did not find toAirport
+        if (visited.length === Object.keys(airports).length) {
+            queue = [];
             break;
         }
-        visited.push(startingpoint);
-        for (city of airports[startingpoint].linked_cities) {
-            if (visited.includes(city) === false) {
-                queue.push(city);
+
+        while (foundPath != true) {
+            let startingpoint = queue.pop();
+            route.push(startingpoint);
+
+            // Add airport to visited without dublicates
+            if (!visited.includes(startingpoint)) {
+                visited.push(startingpoint);
             }
-            else if (visited.includes(city) === true && airports[startingpoint].linked_cities.length === 1) {
-                visited.splice(visited.indexOf(startingpoint), 1);
+
+            let countAddedAirports = 0;
+            for (city of airports[startingpoint].linked_cities) {
+                // If we found end airport add it to path and end all while
+                if (toAirport === city) {
+                    foundPath = true;
+                    route.push(city);
+                    queue = [];
+                    result = true;
+                    break;
+                }
+                // If this city is not already in route && queue add it to queue
+                if (route.includes(city) === false && queue.includes(city) === false) {
+                    queue.push(city);
+                    countAddedAirports++;
+                } 
             }
-            if (toAirport === city) {
+            // If this city cant add new linked cities, then we dont need it
+            if (countAddedAirports === 0) {
                 foundPath = true;
-                visited.push(city);
-                break;
             }
+
         }
     }
-
-    let places = [];
-    let path = buildRoute(places, fromAirport, toAirport);
-
-    console.log(visited);
-    if(queue == false) console.log("Cant build route!");
-
-    console.log(fromAirport, toAirport);
+    console.log(route);
+    drawRoute(route);
 }
 
-function buildRoute(places, start, end){
-    let startingAirport = airports.start.linked_cities.pop();
-    for (city of airports.startingAirport.linked_cities) {
-        if (end === city) {
-            return true;
-        } else {
-            buildRoute(startingAirport, end);
-        }
-    }
+function drawRoute(flight){
+    if (flight.length > 1) {
+        let coordinates = flight.map((city) => {
+            return airports[city].coord;
+        })        
+        var polyline = L.polyline(coordinates, {color: 'red', weight: 3}).addTo(mymap);
+        // zoom the map to the polyline
+        mymap.fitBounds(polyline.getBounds());
+    } else {
+        alert("Cant build route!");
+    } 
 }

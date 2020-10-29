@@ -3,6 +3,15 @@
     width: 100%;
 }
 
-.ToAirport, .FromAirport{
+.ToAirport, .FromAirport {
     margin: 5px;
+}
+
+.airportsList {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.airportsList ul {
+    margin-block-start: 0;
 }
