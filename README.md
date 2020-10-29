@@ -5,3 +5,4 @@ This algorithm creates line between two airports on the map.
 - Cleares path until finds ending point.
 - If all nodes are visited, it stops and did not found end point.
 
+![Graph scheme](scheme.png)

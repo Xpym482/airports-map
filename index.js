@@ -15,7 +15,7 @@ const airports = {
     "RIX":
     {
         "coord": [56.9226554, 23.9749147],
-        "linked_cities": ["TLL", "SVO", "SPU", "DBV", "LIS"]
+        "linked_cities": ["TLL", "SVO", "SPU", "DBV", "LIS", "BGY"]
     },
     "BGY":
     {
